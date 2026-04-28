@@ -1,0 +1,31 @@
+# Dependencies
+**/node_modules/
+
+# Environment (never commit secrets)
+.env
+.env.*
+!.env.example
+api/.env
+galipet-app/.env
+
+# Frontend build
+galipet-app/dist
+galipet-app/dist-ssr
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea
+.vscode/*
+!.vscode/extensions.json
+
+# API uploads (local dev files)
+api/uploads/
+
+# Crash / noise
+*.stackdump
+bash.exe.stackdump

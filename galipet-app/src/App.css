@@ -1,0 +1,322 @@
+/* App-level styles (Tailwind is loaded from index.css) */
+
+
+
+/* :where() keeps specificity at 0 so Tailwind padding/border classes on inputs still apply */
+:where(input[type='text'], input[type='password'], input[type='email'], input[type='tel']) {
+  width: 100%;
+  margin-block: 0.25rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  padding: 0.5rem 0.75rem;
+  box-sizing: border-box;
+}
+
+
+
+button {
+
+  font-family: inherit;
+
+  cursor: pointer;
+
+}
+
+
+
+/* Primary CTA — Search, Book, Save, Submit, Continue… */
+
+button.primary {
+
+  background-color: #e05c2a;
+
+  color: #fff;
+
+  font-weight: 600;
+
+  border-radius: 9999px;
+
+  padding: 0.5rem 1.25rem;
+
+  font-size: 0.875rem;
+
+  line-height: 1.25rem;
+
+  border: 1px solid #e05c2a;
+
+  box-shadow:
+
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+  transition:
+
+    background-color 0.2s ease,
+
+    color 0.2s ease,
+
+    border-color 0.2s ease,
+
+    box-shadow 0.2s ease;
+  min-height: 44px;
+
+}
+
+
+
+button.primary:hover:not(:disabled) {
+
+  background-color: #c94e22;
+
+  border-color: #c94e22;
+
+}
+
+
+
+button.primary:disabled {
+
+  opacity: 0.55;
+
+  cursor: not-allowed;
+
+}
+
+
+
+/* Secondary — Cancel, Back, Close, outline actions */
+
+button.secondary {
+
+  background-color: #fff;
+
+  color: #e05c2a;
+
+  font-weight: 600;
+
+  border-radius: 9999px;
+
+  padding: 0.5rem 1.25rem;
+
+  font-size: 0.875rem;
+
+  line-height: 1.25rem;
+
+  border: 1px solid #e05c2a;
+
+  box-shadow:
+
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+  transition: background-color 0.2s ease, color 0.2s ease;
+  min-height: 44px;
+
+}
+
+
+
+button.secondary:hover:not(:disabled) {
+
+  background-color: #fee9df;
+
+}
+
+
+
+button.secondary:disabled {
+
+  opacity: 0.55;
+
+  cursor: not-allowed;
+
+}
+
+
+
+/* Compact icon-style secondary (modal close, etc.) */
+
+button.secondary--icon {
+
+  padding: 0.35rem 0.45rem;
+
+  line-height: 1;
+
+}
+
+
+
+/* Log out — keep red, not orange */
+
+button.logout {
+
+  background-color: #fff;
+
+  color: #dc2626;
+
+  font-weight: 600;
+
+  border-radius: 9999px;
+
+  padding: 0.5rem 1.25rem;
+
+  font-size: 0.875rem;
+
+  border: 1px solid #fecaca;
+
+  box-shadow:
+
+    0 4px 6px -1px rgb(0 0 0 / 0.08),
+
+    0 2px 4px -2px rgb(0 0 0 / 0.08);
+
+  transition: background-color 0.2s ease;
+  min-height: 44px;
+
+}
+
+
+
+button.logout:hover:not(:disabled) {
+
+  background-color: #fef2f2;
+
+}
+
+
+
+a.secondary {
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background-color: #fff;
+
+  color: #e05c2a;
+
+  font-weight: 600;
+
+  border-radius: 9999px;
+
+  padding: 0.5rem 1.25rem;
+
+  font-size: 0.875rem;
+
+  border: 1px solid #e05c2a;
+
+  text-decoration: none;
+
+  box-shadow:
+
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+  transition: background-color 0.2s ease;
+  min-height: 44px;
+
+}
+
+
+
+a.secondary:hover {
+
+  background-color: #fee9df;
+
+}
+
+a.secondary.secondary--dashed {
+
+  border-style: dashed;
+
+}
+
+
+
+a.primary {
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background-color: #e05c2a;
+
+  color: #fff;
+
+  font-weight: 600;
+
+  border-radius: 9999px;
+
+  padding: 0.5rem 1.25rem;
+
+  font-size: 0.875rem;
+
+  border: 1px solid #e05c2a;
+
+  text-decoration: none;
+
+  box-shadow:
+
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+  transition: background-color 0.2s ease;
+  min-height: 44px;
+
+}
+
+
+
+a.primary:hover {
+
+  background-color: #c94e22;
+
+  border-color: #c94e22;
+
+}
+
+label.primary {
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background-color: #e05c2a;
+
+  color: #fff;
+
+  font-weight: 600;
+
+  border-radius: 9999px;
+
+  border: 1px solid #e05c2a;
+
+  box-shadow:
+
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+  transition: background-color 0.2s ease;
+
+}
+
+label.primary:hover {
+
+  background-color: #c94e22;
+
+  border-color: #c94e22;
+
+}
+
+
