@@ -123,6 +123,14 @@ export default function LoginPage() {
             value={password}
             onChange={(ev) => setPassword(ev.target.value)}
           />
+          <div className="text-right">
+            <Link
+              to="/forgot-password"
+              className="text-xs text-gray-500 underline-offset-2 hover:text-gray-600 hover:underline"
+            >
+              Forgot password?
+            </Link>
+          </div>
           <button
             type="submit"
             className="primary min-h-11 w-full"

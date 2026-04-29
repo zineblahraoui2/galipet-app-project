@@ -3,6 +3,8 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import Layout from './Layout.jsx'
 import LoginPage from './pages/login-page.jsx'
 import RegisterPage from './pages/register-page.jsx'
+import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx'
+import ResetPasswordPage from './pages/ResetPasswordPage.jsx'
 import AccountLayout, {
   AccountProfileTab,
   AccountPetsTab,
@@ -46,6 +48,8 @@ function App() {
             <Route path="/" element={<Layout />}>
               <Route index element={<HomeRouter />} />
               <Route path="login" element={<LoginPage />} />
+              <Route path="forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="reset-password" element={<ResetPasswordPage />} />
               <Route path="register" element={<RegisterPage />} />
               <Route path="search" element={<SearchPage />} />
               <Route path="professionals/:id" element={<ProfessionalProfilePage />} />

@@ -35,6 +35,8 @@ const UserSchema = new Schema({
     reviews: { type: Boolean, default: true },
     reminders: { type: Boolean, default: true },
   },
+  resetPasswordToken: { type: String, default: null },
+  resetPasswordExpires: { type: Date, default: null },
 }, { timestamps: true })
 
 module.exports = mongoose.model('User', UserSchema)

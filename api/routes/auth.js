@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path')
+const crypto = require('crypto')
 const express = require('express')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
@@ -185,6 +186,18 @@ function publicUser(doc) {
 
 async function hashPassword(plain) {
   return bcrypt.hash(plain, BCRYPT_ROUNDS)
+}
+
+function hashResetToken(rawToken) {
+  return crypto.createHash('sha256').update(String(rawToken)).digest('hex')
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
 }
 
 function queueWelcomeEmail(userDoc, role) {
@@ -527,6 +540,75 @@ router.post('/login', async (req, res) => {
     return res.json(jsonUserSession(userDoc))
   } catch (err) {
     return res.status(500).json({ error: err.message || 'login failed' })
+  }
+})
+
+const forgotPasswordOkBody = {
+  ok: true,
+  message: 'If this email exists, a reset link has been sent',
+}
+
+router.post('/api/auth/forgot-password', async (req, res) => {
+  const emailRaw = String(req.body?.email ?? '').trim()
+  const respondOk = () => res.status(200).json(forgotPasswordOkBody)
+  if (!emailRaw) {
+    return respondOk()
+  }
+  try {
+    const escaped = emailRaw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const userDoc = await User.findOne({ email: { $regex: new RegExp(`^${escaped}$`, 'i') } })
+    if (!userDoc || !userDoc.password) {
+      return respondOk()
+    }
+    const rawToken = crypto.randomBytes(32).toString('hex')
+    const hashed = hashResetToken(rawToken)
+    const resetPasswordExpires = new Date(Date.now() + 60 * 60 * 1000)
+    await User.updateOne({ _id: userDoc._id }, { $set: { resetPasswordToken: hashed, resetPasswordExpires } })
+    const base = webAppOrigin()
+    const resetUrl = `${base}/reset-password?token=${encodeURIComponent(rawToken)}`
+    const safeName = String(userDoc.name || 'there').trim() || 'there'
+    sendMail({
+      to: userDoc.email,
+      subject: 'Reset your GaliPet password',
+      html: `<p>Hi ${escapeHtml(safeName)},</p><p>We received a request to reset your password. Click the link below (valid for 1 hour):</p><p><a href="${resetUrl}">Reset password</a></p><p>If you did not request this, you can ignore this email.</p>`,
+    })
+    return respondOk()
+  } catch (err) {
+    console.error('[auth/forgot-password]', err)
+    return res.status(500).json({ error: 'Something went wrong' })
+  }
+})
+
+router.post('/api/auth/reset-password', async (req, res) => {
+  const token = String(req.body?.token ?? '').trim()
+  const newPassword = String(req.body?.newPassword ?? '')
+  if (!token || !newPassword) {
+    return res.status(400).json({ error: 'Invalid or expired token' })
+  }
+  if (newPassword.length < 6) {
+    return res.status(400).json({ error: 'Password must be at least 6 characters' })
+  }
+  try {
+    const hashed = hashResetToken(token)
+    const userDoc = await User.findOne({
+      resetPasswordToken: hashed,
+      resetPasswordExpires: { $gt: new Date() },
+    })
+    if (!userDoc) {
+      return res.status(400).json({ error: 'Invalid or expired token' })
+    }
+    const passwordHash = await hashPassword(newPassword)
+    await User.updateOne(
+      { _id: userDoc._id },
+      {
+        $set: { password: passwordHash },
+        $unset: { resetPasswordToken: '', resetPasswordExpires: '' },
+      },
+    )
+    return res.json({ ok: true, message: 'Password updated successfully' })
+  } catch (err) {
+    console.error('[auth/reset-password]', err)
+    return res.status(500).json({ error: 'Something went wrong' })
   }
 })
 
