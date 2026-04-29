@@ -130,6 +130,7 @@ function shapeProProfileResponse(pro, userDoc) {
       email: u.email || '',
       firstName: u.firstName || '',
       lastName: u.lastName || '',
+      hasGoogleLogin: Boolean(u.googleId),
       proNotifications: u.proNotifications || {
         newBooking: true,
         messages: true,

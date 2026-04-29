@@ -196,7 +196,14 @@ export function AccountProfileTab() {
     avatar: '',
     plan: 'free',
     createdAt: '',
+    hasGoogleLogin: false,
   })
+  const [pwdCurrent, setPwdCurrent] = useState('')
+  const [pwdNew, setPwdNew] = useState('')
+  const [pwdConfirm, setPwdConfirm] = useState('')
+  const [pwdBusy, setPwdBusy] = useState(false)
+  const [pwdMsg, setPwdMsg] = useState('')
+  const [pwdErr, setPwdErr] = useState('')
 
   // Intentionally mount-only: never depend on `user`, `form`, or anything updated by this fetch,
   // or `setUser` will retrigger and hammer `/api/users/me` (infinite loop).
@@ -223,6 +230,7 @@ export function AccountProfileTab() {
             avatar: userData.avatar ?? '',
             plan: userData.plan ?? 'free',
             createdAt: userData.createdAt ?? '',
+            hasGoogleLogin: Boolean(userData.hasGoogleLogin),
           })
           setUser((prev) => ({
             ...(prev ?? {}),
@@ -317,6 +325,7 @@ export function AccountProfileTab() {
           avatar: userData.avatar ?? prev.avatar,
           plan: userData.plan ?? prev.plan,
           createdAt: userData.createdAt ?? prev.createdAt,
+          hasGoogleLogin: Boolean(userData.hasGoogleLogin ?? prev.hasGoogleLogin),
         }))
         setUser((prev) => ({
           ...(prev ?? {}),
@@ -333,6 +342,37 @@ export function AccountProfileTab() {
       setError(e?.response?.data?.error ?? 'Failed to save your profile.')
     } finally {
       setBusy(false)
+    }
+  }
+
+  async function handlePasswordUpdate(ev) {
+    ev.preventDefault()
+    setPwdErr('')
+    setPwdMsg('')
+    if (form.hasGoogleLogin) return
+    if (pwdNew.length < 8) {
+      setPwdErr('New password must be at least 8 characters.')
+      return
+    }
+    if (pwdNew !== pwdConfirm) {
+      setPwdErr('New passwords do not match.')
+      return
+    }
+    setPwdBusy(true)
+    try {
+      await api.patch('/api/users/me/password', {
+        currentPassword: pwdCurrent,
+        newPassword: pwdNew,
+      })
+      setPwdCurrent('')
+      setPwdNew('')
+      setPwdConfirm('')
+      setPwdMsg('Password updated.')
+      window.setTimeout(() => setPwdMsg(''), 3000)
+    } catch (e) {
+      setPwdErr(e?.response?.data?.error ?? 'Could not update password.')
+    } finally {
+      setPwdBusy(false)
     }
   }
 
@@ -524,6 +564,52 @@ export function AccountProfileTab() {
             Saved on your account so we can recommend nearby services later.
           </p>
         </div>
+
+        <div className="rounded-2xl border border-gray-100 bg-[#F6EFE9]/40 p-4 sm:p-5">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Security</p>
+          {form.hasGoogleLogin ? (
+            <p className="text-sm leading-relaxed text-gray-600">
+              Your account is linked to Google. To change how you sign in, manage your password and security in your
+              Google Account.
+            </p>
+          ) : (
+            <form onSubmit={handlePasswordUpdate} className="space-y-3">
+              {pwdErr ? <p className="text-sm text-red-600">{pwdErr}</p> : null}
+              {pwdMsg ? <p className="text-sm text-green-700">{pwdMsg}</p> : null}
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Current password</label>
+                <input
+                  type="password"
+                  autoComplete="current-password"
+                  value={pwdCurrent}
+                  onChange={(e) => setPwdCurrent(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">New password</label>
+                <input
+                  type="password"
+                  autoComplete="new-password"
+                  value={pwdNew}
+                  onChange={(e) => setPwdNew(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Confirm new password</label>
+                <input
+                  type="password"
+                  autoComplete="new-password"
+                  value={pwdConfirm}
+                  onChange={(e) => setPwdConfirm(e.target.value)}
+                />
+              </div>
+              <button type="submit" className="secondary" disabled={pwdBusy}>
+                {pwdBusy ? 'Updating…' : 'Update password'}
+              </button>
+            </form>
+          )}
+        </div>
+
         <div className="mt-6 flex flex-wrap gap-3">
           <button type="submit" className="primary" disabled={busy}>
             {busy ? 'Saving…' : 'Save changes'}

@@ -4,6 +4,7 @@ import { format } from 'date-fns'
 import 'react-datepicker/dist/react-datepicker.css'
 import { Link } from 'react-router-dom'
 import { api } from '../../api/client.js'
+import { combineDateAndTimeSlot, enrichOwnerBookingForDisplay } from '../../utils/ownerBooking.js'
 import BookingActions, { StatusBadge } from '../BookingActions.jsx'
 
 const BRAND = '#E05C2A'
@@ -29,12 +30,6 @@ for (let h = 9; h <= 18; h++) {
 
 function serviceLabel(type) {
   return SERVICE_OPTIONS.find((o) => o.value === type)?.label || type
-}
-
-function toNoonIso(date) {
-  if (!date) return ''
-  const d = new Date(date)
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12, 0, 0).toISOString()
 }
 
 function startOfToday() {
@@ -151,7 +146,8 @@ export default function BookingsTab() {
     setLoading(true)
     try {
       const { data } = await api.get('/api/bookings')
-      setBookings(data.bookings || [])
+      const rows = Array.isArray(data?.bookings) ? data.bookings : []
+      setBookings(rows.map(enrichOwnerBookingForDisplay))
     } catch {
       setBookings([])
       showToast('Could not load bookings.')
@@ -229,16 +225,25 @@ export default function BookingsTab() {
 
   const handleConfirmBooking = async () => {
     if (!petId || !selectedPro) return
+    const services = Array.isArray(selectedPro.services) ? selectedPro.services : []
+    const service = services[0]
+    if (!service?._id) {
+      showToast('This professional has no bookable service yet.')
+      return
+    }
+    const startAt = combineDateAndTimeSlot(bookingDate, timeSlot)
+    if (!startAt || Number.isNaN(startAt.getTime())) {
+      showToast('Pick a valid date and time.')
+      return
+    }
     setSubmitting(true)
     try {
       await api.post('/api/bookings', {
         professionalId: selectedPro._id,
         pet: petId,
-        serviceType: selectedPro.specialty,
-        date: toNoonIso(bookingDate),
-        timeSlot,
+        serviceId: service._id,
+        startAt: startAt.toISOString(),
         notes,
-        price,
       })
       setShowNewModal(false)
       showToast('Booking confirmed! We will follow up soon.')
@@ -258,10 +263,11 @@ export default function BookingsTab() {
 
   const submitModify = async () => {
     if (!modifyBooking) return
+    const startAt = combineDateAndTimeSlot(modifyDate, modifyTime)
+    if (!startAt || Number.isNaN(startAt.getTime())) return
     try {
       await api.patch(`/api/bookings/${modifyBooking._id}`, {
-        date: toNoonIso(modifyDate),
-        timeSlot: modifyTime,
+        startAt: startAt.toISOString(),
       })
       setModifyBooking(null)
       showToast('Booking updated.')
@@ -478,7 +484,13 @@ export default function BookingsTab() {
                       booking={b}
                       userRole="owner"
                       onBookingUpdated={(ub) =>
-                        setBookings((prev) => prev.map((x) => (String(x._id) === String(ub._id) ? { ...x, ...ub } : x)))
+                        setBookings((prev) =>
+                          prev.map((x) =>
+                            String(x._id) === String(ub._id)
+                              ? enrichOwnerBookingForDisplay({ ...x, ...ub })
+                              : x,
+                          ),
+                        )
                       }
                     />
                   </div>

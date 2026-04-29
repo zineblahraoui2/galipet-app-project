@@ -7,6 +7,7 @@ const mongoose = require('mongoose')
 const multer = require('multer')
 const User = require('../models/users')
 const Professional = require('../models/professionals')
+const passport = require('../middleware/passport')
 const { sendMail } = require('../helpers/mailer')
 const templates = require('../helpers/emailTemplates')
 
@@ -43,7 +44,15 @@ const DEFAULT_JWT_EXPIRES = '7d'
 const AUTH_COOKIE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000
 
 function webAppOrigin() {
-  return (process.env.WEB_APP_URL || 'http://localhost:5173').replace(/\/$/, '')
+  return String(process.env.CLIENT_URL || process.env.WEB_APP_URL || 'http://localhost:5173').replace(/\/$/, '')
+}
+
+function googleOAuthEnabled() {
+  return Boolean(
+    String(process.env.GOOGLE_CLIENT_ID || '').trim() &&
+      String(process.env.GOOGLE_CLIENT_SECRET || '').trim() &&
+      String(process.env.GOOGLE_CALLBACK_URL || '').trim(),
+  )
 }
 
 function jwtSecret() {
@@ -131,11 +140,21 @@ async function userFromAuthCookie(req) {
   return User.findById(id)
 }
 
+/** Multer / some clients send duplicate fields as arrays — take first value only (avoids "Test,Test", "city,x"). */
+function pickStr(v) {
+  if (v == null) return ''
+  if (Array.isArray(v)) {
+    const x = v[0]
+    return x == null ? '' : String(x).trim()
+  }
+  return String(v).trim()
+}
+
 function readRegisterBody(body = {}) {
   return {
-    name: String(body.name ?? body.fullName ?? '').trim(),
-    email: String(body.email ?? '').trim(),
-    password: String(body.password ?? '').trim(),
+    name: pickStr(body.name ?? body.fullName),
+    email: pickStr(body.email).toLowerCase(),
+    password: pickStr(body.password),
   }
 }
 
@@ -160,6 +179,7 @@ function publicUser(doc) {
     avatar: doc.avatar ?? '',
     plan: doc.plan ?? 'free',
     role: doc.role ?? 'owner',
+    hasGoogleLogin: Boolean(doc.googleId),
   }
 }
 
@@ -233,6 +253,61 @@ router.get('/login', (req, res) => {
   res.redirect(302, `${webAppOrigin()}/login`)
 })
 
+router.get('/api/auth/google', (req, res, next) => {
+  if (!googleOAuthEnabled()) {
+    return res.redirect(302, `${webAppOrigin()}/login?error=google_not_configured`)
+  }
+  return passport.authenticate('google', { scope: ['profile', 'email'], session: false })(req, res, next)
+})
+
+router.get(
+  '/api/auth/google/callback',
+  (req, res, next) => {
+    if (!googleOAuthEnabled()) {
+      return res.redirect(302, `${webAppOrigin()}/login?error=google_not_configured`)
+    }
+    return next()
+  },
+  passport.authenticate('google', {
+    session: false,
+    failureRedirect: `${webAppOrigin()}/login?error=google_failed`,
+  }),
+  async (req, res) => {
+    let userDoc = req.user
+    try {
+      if (!userDoc?._id) {
+        return res.redirect(302, `${webAppOrigin()}/login?error=google_failed`)
+      }
+      userDoc = await User.findById(userDoc._id)
+      if (!userDoc) {
+        return res.redirect(302, `${webAppOrigin()}/login?error=google_failed`)
+      }
+      if (userDoc.suspended) {
+        return res.redirect(302, `${webAppOrigin()}/login?error=suspended`)
+      }
+      let token
+      try {
+        token = signAuthToken(userDoc)
+      } catch (secretErr) {
+        console.error('[auth/google/callback]', secretErr.message)
+        return res.redirect(302, `${webAppOrigin()}/login?error=google_failed`)
+      }
+      setAuthCookie(res, token)
+      const role = String(userDoc.role || 'owner').toLowerCase()
+      const redirects = {
+        owner: `${webAppOrigin()}/home`,
+        professional: `${webAppOrigin()}/pro/dashboard`,
+        admin: `${webAppOrigin()}/admin/dashboard`,
+      }
+      const dest = redirects[role] || redirects.owner
+      return res.redirect(302, dest)
+    } catch (err) {
+      console.error('[auth/google/callback]', err)
+      return res.redirect(302, `${webAppOrigin()}/login?error=google_failed`)
+    }
+  },
+)
+
 // Do not replace registerUploadMaybe with uploadDegree.single('degree') alone — JSON registrations must skip multer.
 router.post('/register', registerUploadMaybe, async (req, res) => {
   if (process.env.GALIPET_DEBUG_REGISTER === '1') {
@@ -242,9 +317,19 @@ router.post('/register', registerUploadMaybe, async (req, res) => {
   }
 
   const ct = String(req.headers['content-type'] || '').toLowerCase()
+  const isMultipart = ct.includes('multipart/form-data')
+  const b = req.body || {}
 
-  if (!ct.includes('multipart/form-data')) {
-    const { name, email, password } = readRegisterBody(req.body)
+  const validRoles = ['owner', 'professional']
+  const rawRole = pickStr(b.role).toLowerCase()
+  const userRole = validRoles.includes(rawRole) ? rawRole : 'owner'
+  const hasStructuredProfile = Boolean(pickStr(b.firstName) || pickStr(b.lastName) || pickStr(b.city))
+
+  // Minimal JSON signup: owner, only name + email + password (no first/last/city) — legacy API / scripts
+  if (!isMultipart && userRole === 'owner' && !hasStructuredProfile) {
+    const email = pickStr(b.email).toLowerCase()
+    const password = pickStr(b.password)
+    const name = pickStr(b.name) || readRegisterBody(b).name
     if (!email || !password) {
       return res.status(400).json({ error: 'email and password are required' })
     }
@@ -253,6 +338,7 @@ router.post('/register', registerUploadMaybe, async (req, res) => {
         name,
         email,
         password: await hashPassword(password),
+        role: 'owner',
       })
       let token
       try {
@@ -276,19 +362,13 @@ router.post('/register', registerUploadMaybe, async (req, res) => {
     }
   }
 
-  const b = req.body || {}
-  const firstName = String(b.firstName ?? '').trim()
-  const lastName = String(b.lastName ?? '').trim()
-  const email = String(b.email ?? '').trim().toLowerCase()
-  const password = String(b.password ?? '')
-  const confirmPassword = String(b.confirmPassword ?? '')
-  const city = String(b.city ?? '').trim()
-  const country = String(b.country ?? '').trim()
-  const validRoles = ['owner', 'professional']
-  const userRole = String(b.role ?? 'owner').toLowerCase()
-  if (!validRoles.includes(userRole)) {
-    return res.status(400).json({ error: 'invalid role' })
-  }
+  const firstName = pickStr(b.firstName)
+  const lastName = pickStr(b.lastName)
+  const email = pickStr(b.email).toLowerCase()
+  const password = pickStr(b.password)
+  const confirmPassword = pickStr(b.confirmPassword)
+  const city = pickStr(b.city)
+  const country = pickStr(b.country)
 
   if (!firstName || !lastName) {
     return res.status(400).json({ error: 'first name and last name are required' })
@@ -306,13 +386,13 @@ router.post('/register', registerUploadMaybe, async (req, res) => {
     return res.status(400).json({ error: 'city is required' })
   }
 
-  const name = `${firstName} ${lastName}`.trim()
-  const specialty = String(b.specialty ?? '').trim()
-  const phone = String(b.phone ?? '').trim()
-  const location = String(b.location ?? '').trim()
-  const description = String(b.description ?? '').trim()
-  const experience = Math.min(50, Math.max(0, Number.parseInt(String(b.experience ?? '0'), 10) || 0))
-  const licenseNumber = String(b.licenseNumber ?? '').trim()
+  const name = (pickStr(b.name) || `${firstName} ${lastName}`).trim()
+  const specialty = pickStr(b.specialty)
+  const phone = pickStr(b.phone)
+  const location = pickStr(b.location)
+  const description = pickStr(b.description)
+  const experience = Math.min(50, Math.max(0, Number.parseInt(pickStr(b.experience) || '0', 10) || 0))
+  const licenseNumber = pickStr(b.licenseNumber)
 
   if (userRole === 'professional') {
     if (!PRO_SPECIALTIES.has(specialty)) {
@@ -323,7 +403,7 @@ router.post('/register', registerUploadMaybe, async (req, res) => {
     }
   }
 
-  const degreeUrl = req.file ? `/uploads/degrees/${req.file.filename}` : ''
+  const degreeUrl = isMultipart && req.file ? `/uploads/degrees/${req.file.filename}` : ''
 
   let userDoc
   try {
@@ -419,6 +499,11 @@ router.post('/login', async (req, res) => {
     const userDoc = await User.findOne({ email })
     if (!userDoc) {
       return res.status(401).json({ error: 'no account for this email' })
+    }
+    if (!userDoc.password) {
+      return res.status(400).json({
+        error: 'This account uses Google sign-in. Please use Continue with Google.',
+      })
     }
     const passOk = await bcrypt.compare(password, userDoc.password)
     if (!passOk) {

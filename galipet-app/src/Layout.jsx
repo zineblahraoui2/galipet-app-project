@@ -5,7 +5,7 @@ export default function Layout() {
   return (
     <div className="flex min-h-svh flex-col">
       <Header />
-      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 py-6 text-left sm:px-6 sm:py-8">
+      <main className="flex w-full max-w-none flex-1 flex-col px-4 pt-0 pb-6 text-left sm:px-6 sm:pt-0 sm:pb-7 lg:px-10">
         <Outlet />
       </main>
     </div>

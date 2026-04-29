@@ -2,7 +2,6 @@ import { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import {
   Calendar,
-  Globe,
   Home,
   LogIn,
   LogOut,
@@ -129,7 +128,7 @@ export default function Header() {
   return (
     <>
       <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/70 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:px-8 lg:px-12">
+        <div className="flex h-16 w-full max-w-none items-center justify-between px-4 sm:px-6 md:px-8 lg:px-10">
           <Link to="/" className="flex items-center gap-2">
             <img
               src="https://galipet-web.com/logo-galipet-orange.svg"
@@ -184,7 +183,7 @@ export default function Header() {
               to="/messages"
               className="relative hidden items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-800 shadow-sm transition hover:border-[#D85A30]/40 hover:text-[#D85A30] lg:flex"
             >
-              <FaEnvelope className="h-4 w-4" aria-hidden />
+              <MessageCircle className="h-4 w-4" aria-hidden />
               Messages
               {unreadCount > 0 ? (
                 <span className="absolute -right-1 -top-1 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-[#E05C2A] px-1 text-[10px] font-bold text-white">
@@ -288,8 +287,6 @@ export default function Header() {
               <MenuItem icon={MapPin} label="Find near me" onClick={() => { setSidebarOpen(false); navigate('/search') }} />
             </div>
             <div className="my-2 border-t border-gray-100" />
-            <MenuItem icon={Globe} label="EN / FR" onClick={() => {}} />
-            <div className="my-2 border-t border-gray-100" />
             <div className="space-y-2">
               <button
                 type="button"
@@ -353,18 +350,6 @@ export default function Header() {
                   )
                 })}
             </nav>
-            <div className="mx-3 border-t border-gray-100" />
-            <div className="p-3">
-              <MenuItem icon={Globe} label="EN / FR" onClick={() => {}} />
-              <MenuItem
-                icon={Settings}
-                label="Settings"
-                onClick={() => {
-                  setSidebarOpen(false)
-                  navigate('/account/notifications')
-                }}
-              />
-            </div>
             <div className="mx-3 border-t border-gray-100" />
             <div className="p-3">
               <MenuItem icon={LogOut} label="Log out" danger onClick={handleLogout} />

@@ -12,6 +12,10 @@ import {
 import { reportLate, reportNoShow, rescheduleBooking } from '../api/bookings.js'
 
 function bookingDateTime(booking) {
+  if (booking?.startAt) {
+    const s = new Date(booking.startAt)
+    return Number.isNaN(s.getTime()) ? null : s
+  }
   const d = booking?.date ? new Date(booking.date) : null
   if (!d || Number.isNaN(d.getTime())) return null
   const [hh = 9, mm = 0] = String(booking.timeSlot || '09:00')
@@ -55,7 +59,7 @@ export default function BookingActions({ booking, userRole, onBookingUpdated }) 
   const status = String(booking?.status || '').toLowerCase()
   const role = String(userRole || '').toLowerCase()
 
-  const apptTime = useMemo(() => bookingDateTime(booking), [booking?.date, booking?.timeSlot])
+  const apptTime = useMemo(() => bookingDateTime(booking), [booking?.date, booking?.timeSlot, booking?.startAt])
   const now = new Date()
   const isPast = apptTime ? now > apptTime : false
   const diffMin = apptTime ? (now - apptTime) / 60000 : 0

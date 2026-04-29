@@ -4,6 +4,7 @@ import { format } from 'date-fns'
 import 'react-datepicker/dist/react-datepicker.css'
 import { MapPin, Star, UserRound } from 'lucide-react'
 import { api } from '../../api/client.js'
+import { combineDateAndTimeSlot } from '../../utils/ownerBooking.js'
 
 const BRAND = '#E05C2A'
 
@@ -28,12 +29,6 @@ function startOfToday() {
   const t = new Date()
   t.setHours(0, 0, 0, 0)
   return t
-}
-
-function toNoonIso(date) {
-  if (!date) return ''
-  const d = new Date(date)
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12, 0, 0).toISOString()
 }
 
 function serviceLabel(type) {
@@ -123,17 +118,26 @@ export default function BookingModal({ preSelectedPro = null, onClose, onSuccess
 
   const handleConfirm = async () => {
     if (!petId || !selectedPro) return
+    const services = Array.isArray(selectedPro.services) ? selectedPro.services : []
+    const service = services[0]
+    if (!service?._id) {
+      setError('This professional has no bookable service yet.')
+      return
+    }
+    const startAt = combineDateAndTimeSlot(bookingDate, timeSlot)
+    if (!startAt || Number.isNaN(startAt.getTime())) {
+      setError('Pick a valid date and time.')
+      return
+    }
     setSubmitting(true)
     setError('')
     try {
       await api.post('/api/bookings', {
         professionalId: selectedPro._id,
         pet: petId,
-        serviceType: selectedPro.specialty,
-        date: toNoonIso(bookingDate),
-        timeSlot,
+        serviceId: service._id,
+        startAt: startAt.toISOString(),
         notes,
-        price,
       })
       onSuccess?.()
     } catch (e) {

@@ -43,6 +43,7 @@ function sanitizeUser(userDoc) {
     avatar: userDoc.avatar ?? '',
     role: userDoc.role ?? 'owner',
     suspended: Boolean(userDoc.suspended),
+    hasGoogleLogin: Boolean(userDoc.googleId),
     plan: userDoc.plan ?? 'free',
     subscription: userDoc.subscription || {
       stripeCustomerId: '',
@@ -143,8 +144,13 @@ router.patch('/api/users/me/password', authMiddleware, async (req, res) => {
     return res.status(400).json({ error: 'new password must be at least 8 characters' })
   }
   try {
-    const userDoc = await User.findById(req.user.id).select('password')
+    const userDoc = await User.findById(req.user.id).select('password googleId')
     if (!userDoc) return res.status(404).json({ error: 'user not found' })
+    if (!userDoc.password) {
+      return res.status(400).json({
+        error: 'This account uses Google sign-in. Change your password in your Google Account settings.',
+      })
+    }
     const ok = await bcrypt.compare(currentPassword, userDoc.password)
     if (!ok) return res.status(400).json({ error: 'current password is incorrect' })
     userDoc.password = await bcrypt.hash(newPassword, 10)

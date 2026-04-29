@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import { UserContext } from '../UserContext.jsx'
 import { api } from '../api/client.js'
+import { enrichOwnerBookingForDisplay } from '../utils/ownerBooking.js'
 import ReviewPromptBanner from '../components/reviews/ReviewPromptBanner.jsx'
 import ownerHomeBackground from '../assets/owner-home-background.png'
 /** One tip per weekday (getDay); icons are Lucide components — dogs & cats only */
@@ -145,7 +146,7 @@ export default function OwnerHome() {
           params: { userId: 'me', limit: 1, sort: 'recent' },
         })
         const list = Array.isArray(data?.bookings) ? data.bookings : []
-        if (!cancelled) setRecentBooking(list[0] || null)
+        if (!cancelled) setRecentBooking(list[0] ? enrichOwnerBookingForDisplay(list[0]) : null)
       } catch {
         if (!cancelled) setRecentBooking(null)
       } finally {
@@ -211,7 +212,7 @@ export default function OwnerHome() {
   }
 
   return (
-    <section className="relative min-h-[60vh] w-full overflow-hidden bg-[#F6EFE9] px-4 py-8 text-left md:px-8">
+    <section className="relative left-1/2 min-h-[60vh] w-screen max-w-[100vw] -translate-x-1/2 overflow-x-clip overflow-y-visible bg-[#F6EFE9] pt-3 pb-5 text-left md:pt-5 md:pb-8">
       <div
         className="pointer-events-none absolute inset-0 z-0"
         style={{
@@ -329,7 +330,7 @@ export default function OwnerHome() {
         <div className="absolute right-[15%] top-[22%] h-36 w-36 rounded-full bg-[#E05C2A]/[0.05] blur-3xl" />
         <div className="absolute bottom-[20%] left-[40%] h-52 w-52 rounded-full bg-[#F4A574]/[0.08] blur-3xl" />
       </div>
-      <div className="relative z-10 mx-auto max-w-6xl lg:max-w-7xl">
+      <div className="relative z-10 mx-auto w-full max-w-none">
         {toastMsg ? (
           <div
             className="mb-4 rounded-2xl border border-green-200 bg-green-50 px-4 py-3 text-center text-sm font-medium text-green-800 shadow-sm"
@@ -339,8 +340,8 @@ export default function OwnerHome() {
           </div>
         ) : null}
         <ReviewPromptBanner />
-        <section className="mb-8 grid grid-cols-1 items-center gap-6 md:grid-cols-2 md:gap-8">
-          <div className="relative">
+        <section className="mb-6 grid grid-cols-1 items-center gap-5 md:mb-8 md:grid-cols-[minmax(0,50%)_minmax(0,1fr)] md:gap-x-10 md:gap-y-7 md:items-center">
+          <div className="relative min-w-0">
             <img
               src={pawPetImage}
               alt=""
@@ -353,7 +354,7 @@ export default function OwnerHome() {
               aria-hidden
               className="pointer-events-none absolute bottom-0 right-6 z-0 h-12 w-12 rotate-[11deg] object-contain opacity-[0.45] drop-shadow-[0_5px_18px_rgba(224,92,42,0.24)] md:right-10 md:h-14 md:w-14"
             />
-            <div className="relative z-10">
+            <div className="relative z-10 pl-8 md:pl-12 lg:pl-16">
             <header>
               <p className="inline-flex items-center gap-2 text-sm text-gray-500">
                 <greeting.Icon className={`h-4 w-4 ${greeting.iconClass}`} />
@@ -433,7 +434,7 @@ export default function OwnerHome() {
             </div>
           </div>
 
-          <div className="relative hidden h-[288px] translate-y-0 items-center justify-center md:flex md:translate-y-1">
+          <div className="relative hidden min-h-0 min-w-0 translate-y-0 overflow-visible pr-4 md:flex md:h-[276px] md:translate-y-1 md:items-center md:justify-center md:pr-10">
             <img
               src={pawPetImage}
               alt=""
@@ -449,7 +450,7 @@ export default function OwnerHome() {
             <Link
               to="/search?type=grooming"
               aria-label="Search groomers"
-              className="absolute left-12 top-[-4px] z-10 flex h-[160px] w-[160px] cursor-pointer items-center justify-center rounded-full border-4 border-white bg-white shadow-lg ring-1 ring-[#E05C2A]/20 transition duration-200 hover:scale-[1.02] hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E05C2A]/45 focus-visible:ring-offset-2"
+              className="absolute left-[8.5rem] top-[-4px] z-10 flex h-[160px] w-[160px] cursor-pointer items-center justify-center rounded-full border-4 border-white bg-white shadow-lg ring-1 ring-[#E05C2A]/20 transition duration-200 hover:scale-[1.02] hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E05C2A]/45 focus-visible:ring-offset-2"
             >
               <span className="flex h-[126px] w-[126px] overflow-hidden rounded-full border-2 border-dashed border-[#E05C2A]/35 bg-[#F6EFE9]">
                 <img src={circleImage('groomer.png')} alt="" className="h-full w-full object-cover" />
@@ -458,7 +459,7 @@ export default function OwnerHome() {
             <Link
               to="/search?type=sitting"
               aria-label="Search sitters"
-              className="absolute right-10 top-[-4px] z-10 flex h-[160px] w-[160px] cursor-pointer items-center justify-center rounded-full border-4 border-white bg-white shadow-lg ring-1 ring-[#E05C2A]/20 transition duration-200 hover:scale-[1.02] hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E05C2A]/45 focus-visible:ring-offset-2"
+              className="absolute right-[14rem] top-[-4px] z-10 flex h-[160px] w-[160px] cursor-pointer items-center justify-center rounded-full border-4 border-white bg-white shadow-lg ring-1 ring-[#E05C2A]/20 transition duration-200 hover:scale-[1.02] hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E05C2A]/45 focus-visible:ring-offset-2"
             >
               <span className="flex h-[126px] w-[126px] overflow-hidden rounded-full border-2 border-dashed border-[#E05C2A]/35 bg-[#F6EFE9]">
                 <img src={circleImage('sitter.png')} alt="" className="h-full w-full object-cover" />
@@ -467,7 +468,7 @@ export default function OwnerHome() {
             <Link
               to="/search?type=vet"
               aria-label="Search vets"
-              className="absolute bottom-[-2px] left-12 z-10 flex h-[160px] w-[160px] cursor-pointer items-center justify-center rounded-full border-4 border-white bg-white shadow-lg ring-1 ring-[#E05C2A]/20 transition duration-200 hover:scale-[1.02] hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E05C2A]/45 focus-visible:ring-offset-2"
+              className="absolute bottom-[-22px] left-[8.5rem] z-10 flex h-[160px] w-[160px] cursor-pointer items-center justify-center rounded-full border-4 border-white bg-white shadow-lg ring-1 ring-[#E05C2A]/20 transition duration-200 hover:scale-[1.02] hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E05C2A]/45 focus-visible:ring-offset-2"
             >
               <span className="flex h-[126px] w-[126px] overflow-hidden rounded-full border-2 border-dashed border-[#E05C2A]/35 bg-[#F6EFE9]">
                 <img src={circleImage('vet.png')} alt="" className="h-full w-full object-cover" />
@@ -476,7 +477,7 @@ export default function OwnerHome() {
             <Link
               to="/search?type=training"
               aria-label="Search trainers"
-              className="absolute bottom-[-4px] right-10 z-10 flex h-[166px] w-[166px] cursor-pointer items-center justify-center rounded-full border-4 border-white bg-white shadow-lg ring-1 ring-[#E05C2A]/20 transition duration-200 hover:scale-[1.02] hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E05C2A]/45 focus-visible:ring-offset-2"
+              className="absolute bottom-[-24px] right-[14.5rem] z-10 flex h-[166px] w-[166px] cursor-pointer items-center justify-center rounded-full border-4 border-white bg-white shadow-lg ring-1 ring-[#E05C2A]/20 transition duration-200 hover:scale-[1.02] hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E05C2A]/45 focus-visible:ring-offset-2"
             >
               <span className="flex h-[130px] w-[130px] overflow-hidden rounded-full border-2 border-dashed border-[#E05C2A]/35 bg-[#F6EFE9]">
                 <img src={circleImage('trainer.png')} alt="" className="h-full w-full object-cover" />
@@ -512,13 +513,15 @@ export default function OwnerHome() {
           {loadingTopRated ? (
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="rounded-[22px] bg-white p-4 shadow-sm">
-                  <div className="animate-pulse">
-                    <div className="h-9 w-9 rounded-full bg-gray-200" />
-                    <div className="mt-3 h-4 w-2/3 rounded bg-gray-200" />
-                    <div className="mt-2 h-3 w-1/2 rounded bg-gray-100" />
-                    <div className="mt-3 h-3 w-1/3 rounded bg-gray-100" />
-                    <div className="mt-3 h-8 w-full rounded bg-gray-100" />
+                <div key={i} className="rounded-[22px] bg-white shadow-sm">
+                  <div className="p-5">
+                    <div className="animate-pulse">
+                      <div className="h-9 w-9 rounded-full bg-gray-200" />
+                      <div className="mt-3 h-4 w-2/3 rounded bg-gray-200" />
+                      <div className="mt-2 h-3 w-1/2 rounded bg-gray-100" />
+                      <div className="mt-3 h-3 w-1/3 rounded bg-gray-100" />
+                      <div className="mt-3 h-8 w-full rounded bg-gray-100" />
+                    </div>
                   </div>
                 </div>
               ))}
@@ -537,8 +540,9 @@ export default function OwnerHome() {
                 return (
                   <article
                     key={pro._id}
-                    className="rounded-[22px] bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
+                    className="rounded-[22px] bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
                   >
+                    <div className="p-5">
                     <div className="flex items-start gap-3">
                       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-sm font-semibold text-[#E05C2A] shadow-sm ring-1 ring-[#E05C2A]/15">
                         {String(pro.name || 'P').charAt(0).toUpperCase()}
@@ -580,6 +584,7 @@ export default function OwnerHome() {
                     >
                       View full profile →
                     </button>
+                    </div>
                   </article>
                 )
               })}

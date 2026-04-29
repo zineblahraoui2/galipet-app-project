@@ -122,6 +122,7 @@ export default function SettingsPage() {
   const [newDegree, setNewDegree] = useState(null)
 
   const [email, setEmail] = useState('')
+  const [hasGoogleLogin, setHasGoogleLogin] = useState(false)
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [notifs, setNotifs] = useState({
@@ -163,6 +164,7 @@ export default function SettingsPage() {
     setCertifications(p.certifications || '')
     if (u) {
       setEmail(u.email || '')
+      setHasGoogleLogin(Boolean(u.hasGoogleLogin))
       setNotifs({
         newBooking: Boolean(u.proNotifications?.newBooking !== false),
         messages: Boolean(u.proNotifications?.messages !== false),
@@ -321,7 +323,7 @@ export default function SettingsPage() {
         email,
         proNotifications: notifs,
       })
-      if (newPassword.trim()) {
+      if (newPassword.trim() && !hasGoogleLogin) {
         await api.patch('/api/users/me/password', {
           currentPassword,
           newPassword,
@@ -788,27 +790,35 @@ export default function SettingsPage() {
               <FieldLabel>Email address</FieldLabel>
               <TextInput type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
             </div>
-            <div className="mb-4">
-              <FieldLabel>Current password</FieldLabel>
-              <TextInput
-                type="password"
-                autoComplete="current-password"
-                placeholder="••••••••"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-              />
-            </div>
-            <div className="mb-6">
-              <FieldLabel>New password</FieldLabel>
-              <TextInput
-                type="password"
-                autoComplete="new-password"
-                placeholder="Leave blank to keep current"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-              />
-              <p className="mt-1 text-xs text-gray-400">At least 8 characters if you change it.</p>
-            </div>
+            {hasGoogleLogin ? (
+              <div className="mb-6 rounded-xl border border-amber-100 bg-[#F6EFE9] px-4 py-3 text-sm text-gray-600">
+                Your account is linked to Google. Password changes are managed in your Google Account.
+              </div>
+            ) : (
+              <>
+                <div className="mb-4">
+                  <FieldLabel>Current password</FieldLabel>
+                  <TextInput
+                    type="password"
+                    autoComplete="current-password"
+                    placeholder="••••••••"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                  />
+                </div>
+                <div className="mb-6">
+                  <FieldLabel>New password</FieldLabel>
+                  <TextInput
+                    type="password"
+                    autoComplete="new-password"
+                    placeholder="Leave blank to keep current"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                  />
+                  <p className="mt-1 text-xs text-gray-400">At least 8 characters if you change it.</p>
+                </div>
+              </>
+            )}
 
             <div className="mb-6 border-t border-gray-100 pt-4">
               <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">Notifications</p>

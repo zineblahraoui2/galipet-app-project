@@ -222,8 +222,8 @@ export default function SearchPage() {
   }
 
   return (
-    <section className="w-full">
-      <div className="flex h-auto flex-col overflow-hidden md:h-[calc(100vh-80px)] md:flex-row">
+    <section className="relative left-1/2 flex min-h-0 w-screen max-w-[100vw] flex-1 -translate-x-1/2 flex-col overflow-x-clip">
+      <div className="flex h-auto min-h-0 flex-1 flex-col overflow-hidden md:h-[calc(100svh-4rem)] md:flex-row">
         <div className="w-full overflow-y-auto border-r border-[#F3E8DF] bg-[#FDF6EE] p-4 md:min-h-0 md:w-[40%]">
           <div className="shrink-0">
             <h1 className="text-2xl font-semibold text-gray-900">Find professionals</h1>

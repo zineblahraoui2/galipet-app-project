@@ -1,0 +1,44 @@
+# Local / single-server production-style stack.
+# Copy .env.deploy.example -> .env next to this file and fill secrets before `docker compose up`.
+
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - galipet_mongo:/data/db
+    ports:
+      - "27017:27017"
+
+  api:
+    build: ./api
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      MONGO_URL: mongodb://mongo:27017/galipet
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      CLIENT_URL: ${CLIENT_URL:-http://localhost:8080}
+      WEB_APP_URL: ${WEB_APP_URL:-http://localhost:8080}
+    depends_on:
+      - mongo
+
+  web:
+    build:
+      context: ./galipet-app
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3001}
+        VITE_MAPBOX_TOKEN: ${VITE_MAPBOX_TOKEN:-}
+        VITE_CLOUDINARY_CLOUD_NAME: ${VITE_CLOUDINARY_CLOUD_NAME:-}
+        VITE_CLOUDINARY_UPLOAD_PRESET: ${VITE_CLOUDINARY_UPLOAD_PRESET:-}
+        VITE_STRIPE_PUBLIC_KEY: ${VITE_STRIPE_PUBLIC_KEY:-}
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
+volumes:
+  galipet_mongo:
