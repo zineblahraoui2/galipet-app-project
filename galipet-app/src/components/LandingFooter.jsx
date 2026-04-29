@@ -39,7 +39,7 @@ export default function LandingFooter({ lang = 'en' }) {
   const t = copy[lang === 'fr' ? 'fr' : 'en']
 
   return (
-    <footer className="w-full min-w-0 border-t border-[#EADFD6] bg-white text-[#1a1a1a]">
+    <footer className="w-full min-w-0 border-t border-[#EADFD6] bg-[#FDF6EE] text-[#1a1a1a]">
       <div className="mx-auto w-full max-w-6xl px-4 py-12 md:px-8 lg:px-12">
         <div className="grid gap-10 md:grid-cols-3 md:gap-8 lg:gap-12">
           <div className="md:pr-4">

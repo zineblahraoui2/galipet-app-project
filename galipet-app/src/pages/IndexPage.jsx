@@ -1,27 +1,54 @@
-import { useEffect, useState } from 'react'
+import { createElement, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { GiPawPrint } from 'react-icons/gi'
-import {
-  BookOpen,
-  Clock3,
-  Heart,
-  Home,
-  PawPrint,
-  Scissors,
-  Search,
-  Shield,
-  Sparkles,
-  Star,
-  Stethoscope,
-} from 'lucide-react'
+import { BookOpen, Heart, Home, PawPrint, Scissors, Sparkles, Stethoscope } from 'lucide-react'
 import pawBackground from '../assets/paw-background.png'
 import HeroSection from '../components/HeroSection.jsx'
 import LandingFooter from '../components/LandingFooter.jsx'
 
+const LANG_STORAGE_KEY = 'galipet:landing-lang'
+
+function readStoredLang() {
+  try {
+    const saved = String(localStorage.getItem(LANG_STORAGE_KEY) || '').toLowerCase()
+    if (saved === 'en' || saved === 'fr') return saved
+  } catch {
+    // ignore storage read failures
+  }
+  return 'en'
+}
+
+function ServiceCard({ className, title, subtitle, icon, background, onClick, bookNowLabel }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`group relative overflow-hidden rounded-2xl p-5 text-left shadow-sm transition hover:shadow-md ${className}`}
+      style={{
+        backgroundImage: background,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
+      <div className="flex h-full flex-col justify-between">
+        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-[#1a1a1a] shadow">
+          {createElement(icon, { className: 'h-4 w-4' })}
+        </span>
+        <div>
+          <p className="text-4xl font-black text-white">{title}</p>
+          <p className="text-sm text-white/90">{subtitle}</p>
+          <span className="mt-3 inline-flex rounded-full bg-black/50 px-3 py-1 text-xs font-semibold text-white">
+            {bookNowLabel}
+          </span>
+        </div>
+      </div>
+    </button>
+  )
+}
+
 export default function IndexPage() {
   const navigate = useNavigate()
-  const [lang, setLang] = useState('en')
-  const LANG_STORAGE_KEY = 'galipet:landing-lang'
+  const [lang] = useState(readStoredLang)
 
   const copy = {
     en: {
@@ -109,17 +136,6 @@ export default function IndexPage() {
   }
   const t = copy[lang]
 
-  useEffect(() => {
-    try {
-      const saved = String(localStorage.getItem(LANG_STORAGE_KEY) || '').toLowerCase()
-      if (saved === 'en' || saved === 'fr') {
-        setLang(saved)
-      }
-    } catch {
-      // ignore storage read failures
-    }
-  }, [])
-
   const serviceBg = {
     vet: "linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.2) 60%), url('https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=1200')",
     sitting:
@@ -132,36 +148,8 @@ export default function IndexPage() {
       "linear-gradient(140deg, rgba(224,92,42,0.35), rgba(26,26,26,0.45)), url('https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1300')",
   }
 
-  function ServiceCard({ className, title, subtitle, Icon, background, onClick }) {
-    return (
-      <button
-        type="button"
-        onClick={onClick}
-        className={`group relative overflow-hidden rounded-2xl p-5 text-left shadow-sm transition hover:shadow-md ${className}`}
-        style={{
-          backgroundImage: background,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      >
-        <div className="flex h-full flex-col justify-between">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-[#1a1a1a] shadow">
-            <Icon className="h-4 w-4" />
-          </span>
-          <div>
-            <p className="text-4xl font-black text-white">{title}</p>
-            <p className="text-sm text-white/90">{subtitle}</p>
-            <span className="mt-3 inline-flex rounded-full bg-black/50 px-3 py-1 text-xs font-semibold text-white">
-              {t.bookNow}
-            </span>
-          </div>
-        </div>
-      </button>
-    )
-  }
-
   return (
-    <div className="relative isolate text-[#1a1a1a]">
+    <div className="relative left-1/2 isolate flex min-h-0 w-screen max-w-[100vw] flex-1 -translate-x-1/2 flex-col overflow-x-clip bg-[#FDF6EE] text-[#1a1a1a] min-h-[calc(100svh-4rem)]">
       <div
         className="pointer-events-none absolute inset-0 z-0 bg-[#FDF6EE]"
         style={{
@@ -169,11 +157,11 @@ export default function IndexPage() {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
-          opacity: 0.85,
+          opacity: 0.92,
         }}
         aria-hidden
       />
-      <div className="relative z-10 space-y-10">
+      <div className="relative z-10 flex flex-1 flex-col space-y-10 pb-6">
       <HeroSection />
 
       <div className="mx-auto flex w-full max-w-6xl justify-center px-4 py-2 md:px-8 md:py-3 lg:px-12" aria-hidden>
@@ -202,7 +190,8 @@ export default function IndexPage() {
             className="min-h-[280px] sm:col-span-2 lg:col-span-3 lg:min-h-[330px]"
             title={t.health}
             subtitle={t.healthSub}
-            Icon={Stethoscope}
+            icon={Stethoscope}
+            bookNowLabel={t.bookNow}
             background={serviceBg.vet}
             onClick={() => navigate('/search?type=vet')}
           />
@@ -212,7 +201,8 @@ export default function IndexPage() {
               className="min-h-[157px]"
               title={t.sitting}
               subtitle={t.sittingSub}
-              Icon={Home}
+              icon={Home}
+              bookNowLabel={t.bookNow}
               background={serviceBg.sitting}
               onClick={() => navigate('/search?type=sitting')}
             />
@@ -220,7 +210,8 @@ export default function IndexPage() {
               className="min-h-[157px]"
               title={t.grooming}
               subtitle={t.groomingSub}
-              Icon={Scissors}
+              icon={Scissors}
+              bookNowLabel={t.bookNow}
               background={serviceBg.grooming}
               onClick={() => navigate('/search?type=grooming')}
             />
@@ -232,7 +223,8 @@ export default function IndexPage() {
             className="min-h-[190px]"
             title={t.education}
             subtitle={t.educationSub}
-            Icon={BookOpen}
+            icon={BookOpen}
+            bookNowLabel={t.bookNow}
             background={serviceBg.training}
             onClick={() => navigate('/search?type=training')}
           />
