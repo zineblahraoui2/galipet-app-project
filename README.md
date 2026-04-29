@@ -14,7 +14,3 @@ cd galipet-app && cp .env.example .env && npm i && npm run dev
 ## Prod (short)
 
 You need **MongoDB**, **HTTPS API**, **HTTPS static app**. Cookies + CORS → set **`CLIENT_URL`** on the API to your real frontend origin (no trailing slash). Build the SPA with **`VITE_API_URL`** pointing at the public API, then `npm run build`.
-
-## License
-
-Private — all rights reserved unless stated otherwise.
