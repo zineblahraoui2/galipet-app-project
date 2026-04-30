@@ -11,25 +11,29 @@ if (fs.existsSync(galipetEnv)) {
 
 const { connectDb } = require('./db')
 const app = require('./app')
-const autoCompleteBookings = require('./helpers/autoCompleteBookings')
-const { startReminderJob } = require('./helpers/reminderJob')
 
-const port = Number(process.env.PORT) || 3001
+// Connect to DB
+connectDb().catch((err) => {
+  console.error('MongoDB connection error:', err.message)
+  process.exit(1)
+})
 
-async function main() {
+// Export app for Vercel serverless
+module.exports = app
+
+// For local development
+if (require.main === module) {
+  const autoCompleteBookings = require('./helpers/autoCompleteBookings')
+  const { startReminderJob } = require('./helpers/reminderJob')
+
+  const port = Number(process.env.PORT) || 3001
+
   console.log('[galipet-api] process.cwd():', process.cwd())
   console.log('[galipet-api] app entry:', path.join(__dirname, 'app.js'))
   console.log(
     '[galipet-api] JWT_SECRET:',
     process.env.JWT_SECRET?.trim() ? 'set' : 'MISSING (POST /login will fail)',
   )
-
-  try {
-    await connectDb()
-  } catch (err) {
-    console.error('MongoDB:', err.message)
-    process.exit(1)
-  }
 
   app.listen(port, () => {
     console.log(`API listening on http://localhost:${port}`)
@@ -45,5 +49,3 @@ async function main() {
   autoCompleteBookings().catch((err) => console.error('[autoCompleteBookings]', err.message))
   startReminderJob()
 }
-
-main()

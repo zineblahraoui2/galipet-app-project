@@ -18,6 +18,10 @@ const professionals = [
     phone: '+212 600-000-001',
     description: 'Small-animal care with evening appointments.',
     avatar: '',
+    services: [
+      { name: 'Consultation', price: 200, duration: 30, description: 'General check-up' },
+      { name: 'Vaccination', price: 150, duration: 15, description: 'Routine vaccination' },
+    ],
   },
   {
     name: 'Salon Pets Fes',
@@ -30,6 +34,10 @@ const professionals = [
     phone: '+212 600-000-003',
     description: 'Full grooming and nail care for cats and dogs.',
     avatar: '',
+    services: [
+      { name: 'Full Grooming', price: 250, duration: 90, description: 'Complete grooming service' },
+      { name: 'Nail Trim', price: 50, duration: 15, description: 'Nail trimming only' },
+    ],
   },
   {
     name: 'Karim Walker',
@@ -42,6 +50,10 @@ const professionals = [
     phone: '+212 600-000-004',
     description: 'Reliable home visits and dog walking.',
     avatar: '',
+    services: [
+      { name: 'Dog Walking', price: 100, duration: 60, description: '1 hour walk' },
+      { name: 'Pet Sitting', price: 300, duration: 480, description: 'Overnight stay' },
+    ],
   },
   {
     name: 'Sofia Trainer',
@@ -54,6 +66,10 @@ const professionals = [
     phone: '+212 600-000-005',
     description: 'Obedience and leash training for dogs.',
     avatar: '',
+    services: [
+      { name: 'Obedience Training', price: 400, duration: 60, description: 'Basic obedience' },
+      { name: 'Leash Training', price: 200, duration: 30, description: 'Leash walking' },
+    ],
   },
   {
     name: 'Dr. Amina',
@@ -66,6 +82,10 @@ const professionals = [
     phone: '+212 600-000-006',
     description: 'Cats, dogs, and preventive medicine.',
     avatar: '',
+    services: [
+      { name: 'Consultation', price: 180, duration: 30, description: 'Vet consultation' },
+      { name: 'Vaccination', price: 120, duration: 15, description: 'Vaccination' },
+    ],
   },
   {
     name: 'Nadia Groomer',
@@ -78,6 +98,10 @@ const professionals = [
     phone: '+212 600-000-007',
     description: 'Breed cuts and spa grooming.',
     avatar: '',
+    services: [
+      { name: 'Breed Cut', price: 300, duration: 120, description: 'Breed-specific cut' },
+      { name: 'Spa Grooming', price: 400, duration: 150, description: 'Full spa treatment' },
+    ],
   },
   {
     name: 'Youssef Sitter',
@@ -90,6 +114,10 @@ const professionals = [
     phone: '+212 600-000-008',
     description: 'Overnight stays and daily dog walks.',
     avatar: '',
+    services: [
+      { name: 'Overnight Stay', price: 250, duration: 720, description: 'Overnight pet sitting' },
+      { name: 'Daily Walk', price: 80, duration: 60, description: 'Daily walk' },
+    ],
   },
   {
     name: 'Atlas Trainer',
@@ -102,6 +130,10 @@ const professionals = [
     phone: '+212 600-000-009',
     description: 'Behavior modification and puppy basics.',
     avatar: '',
+    services: [
+      { name: 'Behavior Modification', price: 500, duration: 90, description: 'Behavior training' },
+      { name: 'Puppy Basics', price: 300, duration: 60, description: 'Puppy training' },
+    ],
   },
 ]
 
