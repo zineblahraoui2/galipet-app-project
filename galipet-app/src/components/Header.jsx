@@ -277,7 +277,6 @@ export default function Header() {
       >
         <div className="border-b border-gray-100 px-4 py-3">
           <p className="text-lg font-semibold italic text-[#E05C2A]">gali&apos;pet</p>
-          <p className="text-xs text-gray-500">Morocco&apos;s pet care platform</p>
         </div>
 
         {!showSignedIn ? (
