@@ -1,10 +1,12 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import DatePicker from 'react-datepicker'
 import { format } from 'date-fns'
 import 'react-datepicker/dist/react-datepicker.css'
+import { Link } from 'react-router-dom'
 import { MapPin, Star, UserRound } from 'lucide-react'
 import { api } from '../../api/client.js'
 import { combineDateAndTimeSlot } from '../../utils/ownerBooking.js'
+import { UserContext } from '../../UserContext.jsx'
 
 const BRAND = '#E05C2A'
 
@@ -45,10 +47,12 @@ function normalizePro(pro) {
     city: pro.city || '',
     rating: Number(pro.rating || 0),
     avatar: pro.avatar || '',
+    services: Array.isArray(pro.services) ? pro.services : [],
   }
 }
 
 export default function BookingModal({ preSelectedPro = null, onClose, onSuccess }) {
+  const { user } = useContext(UserContext)
   const presetPro = useMemo(() => normalizePro(preSelectedPro), [preSelectedPro])
   const [step, setStep] = useState(1)
   const [pets, setPets] = useState([])
@@ -61,9 +65,14 @@ export default function BookingModal({ preSelectedPro = null, onClose, onSuccess
   const [petId, setPetId] = useState('')
   const [notes, setNotes] = useState('')
   const [selectedPro, setSelectedPro] = useState(presetPro)
+  const [selectedServiceId, setSelectedServiceId] = useState('')
   const [bookingDate, setBookingDate] = useState(() => new Date())
   const [timeSlot, setTimeSlot] = useState('10:00')
   const [error, setError] = useState('')
+
+  const isOwner = String(user?.role || '').toLowerCase() === 'owner'
+  const hasPets = pets.length > 0
+  const canBook = Boolean(user?.id && isOwner && hasPets)
 
   useEffect(() => {
     let cancelled = false
@@ -108,10 +117,30 @@ export default function BookingModal({ preSelectedPro = null, onClose, onSuccess
     }
   }, [presetPro, serviceType, step])
 
-  const price = DEFAULT_PRICE[serviceType] ?? 200
+  useEffect(() => {
+    const services = Array.isArray(selectedPro?.services) ? selectedPro.services : []
+    if (services.length === 0) {
+      setSelectedServiceId('')
+      return
+    }
+    const selectedExists = services.some((s) => String(s._id) === String(selectedServiceId))
+    if (!selectedExists) {
+      setSelectedServiceId(String(services[0]._id))
+    }
+  }, [selectedPro, selectedServiceId])
+
+  const selectedService = useMemo(() => {
+    const services = Array.isArray(selectedPro?.services) ? selectedPro.services : []
+    return services.find((s) => String(s._id) === String(selectedServiceId)) || services[0] || null
+  }, [selectedPro, selectedServiceId])
+
+  const price = selectedService ? Number(selectedService.price) : DEFAULT_PRICE[serviceType] ?? 200
 
   const handleNextFromStep1 = () => {
-    if (!petId) return
+    if (!petId || !canBook) {
+      setError('Please log in as an owner and add a pet before continuing.')
+      return
+    }
     setError('')
     setStep(presetPro ? 3 : 2)
   }
@@ -119,11 +148,7 @@ export default function BookingModal({ preSelectedPro = null, onClose, onSuccess
   const handleConfirm = async () => {
     if (!petId || !selectedPro) return
     const services = Array.isArray(selectedPro.services) ? selectedPro.services : []
-    const service = services[0]
-    if (!service?._id) {
-      setError('This professional has no bookable service yet.')
-      return
-    }
+    const service = services.find((s) => String(s._id) === String(selectedServiceId)) || services[0]
     const startAt = combineDateAndTimeSlot(bookingDate, timeSlot)
     if (!startAt || Number.isNaN(startAt.getTime())) {
       setError('Pick a valid date and time.')
@@ -135,7 +160,7 @@ export default function BookingModal({ preSelectedPro = null, onClose, onSuccess
       await api.post('/api/bookings', {
         professionalId: selectedPro._id,
         pet: petId,
-        serviceId: service._id,
+        serviceId: service?._id || null,
         startAt: startAt.toISOString(),
         notes,
       })
@@ -186,22 +211,48 @@ export default function BookingModal({ preSelectedPro = null, onClose, onSuccess
               </div>
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">Pet</label>
-                <select
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2"
-                  value={petId}
-                  onChange={(e) => setPetId(e.target.value)}
-                  disabled={petsLoading}
-                >
-                  {pets.length === 0 ? (
-                    <option value="">No pets — add one in My pets</option>
-                  ) : (
-                    pets.map((p) => (
+                {!user?.id ? (
+                  <div className="rounded-lg border border-orange-200 bg-orange-50 px-3 py-2 text-sm text-orange-800">
+                    Please log in as a pet owner to book a service.
+                    <Link to="/login" className="font-semibold text-orange-900 underline">
+                      Login
+                    </Link>{' '}
+                    or{' '}
+                    <Link to="/register" className="font-semibold text-orange-900 underline">
+                      register
+                    </Link>{' '}
+                    first.
+                  </div>
+                ) : !isOwner ? (
+                  <div className="rounded-lg border border-orange-200 bg-orange-50 px-3 py-2 text-sm text-orange-800">
+                    Only pet owners can make bookings. Please log in with an owner account.
+                  </div>
+                ) : petsLoading ? (
+                  <div className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500">
+                    Loading pets…
+                  </div>
+                ) : !hasPets ? (
+                  <div className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500">
+                    No pets found. Add one in{' '}
+                    <Link to="/account/pets" className="font-semibold text-[#D85A30] underline">
+                      My pets
+                    </Link>
+                    .
+                  </div>
+                ) : (
+                  <select
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2"
+                    value={petId}
+                    onChange={(e) => setPetId(e.target.value)}
+                    disabled={petsLoading}
+                  >
+                    {pets.map((p) => (
                       <option key={p._id} value={p._id}>
                         {p.name}
                       </option>
-                    ))
-                  )}
-                </select>
+                    ))}
+                  </select>
+                )}
               </div>
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">Notes (optional)</label>
@@ -212,7 +263,12 @@ export default function BookingModal({ preSelectedPro = null, onClose, onSuccess
                   placeholder="Anything the professional should know..."
                 />
               </div>
-              <button type="button" disabled={!petId} className="primary w-full disabled:opacity-50" onClick={handleNextFromStep1}>
+              <button
+                type="button"
+                disabled={!canBook || !petId}
+                className="primary w-full disabled:opacity-50"
+                onClick={handleNextFromStep1}
+              >
                 Continue
               </button>
             </div>
@@ -275,6 +331,22 @@ export default function BookingModal({ preSelectedPro = null, onClose, onSuccess
 
           {step === 3 ? (
             <div className="space-y-4">
+              {selectedPro?.services?.length > 0 ? (
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-gray-700">Service</label>
+                  <select
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2"
+                    value={selectedServiceId}
+                    onChange={(e) => setSelectedServiceId(e.target.value)}
+                  >
+                    {selectedPro.services.map((service) => (
+                      <option key={service._id} value={String(service._id)}>
+                        {service.name} — {Number(service.price || 0)} MAD
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ) : null}
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">Date</label>
                 <DatePicker
@@ -310,7 +382,7 @@ export default function BookingModal({ preSelectedPro = null, onClose, onSuccess
               <div className="rounded-xl border border-gray-100 bg-[#fff7f3] p-3 text-sm">
                 <p className="font-semibold text-gray-900">Summary</p>
                 <ul className="mt-2 space-y-1 text-gray-600">
-                  <li>Service: {serviceLabel(serviceType)}</li>
+                  <li>Service: {selectedService?.name || serviceLabel(serviceType)}</li>
                   <li>Pet: {pets.find((p) => p._id === petId)?.name || '—'}</li>
                   <li className="flex items-center gap-1">
                     <MapPin className="h-3.5 w-3.5 text-[#E05C2A]" />

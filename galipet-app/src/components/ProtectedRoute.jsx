@@ -10,7 +10,7 @@ export default function ProtectedRoute({ allowRole, children }) {
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />
+    return <Navigate to="/" replace />
   }
 
   const role = String(user.role || 'owner').toLowerCase()

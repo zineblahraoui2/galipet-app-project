@@ -392,13 +392,11 @@ router.post('/api/bookings', async (req, res) => {
     const pid = asObjectId(petId)
     if (!pid) return res.status(400).json({ error: 'invalid pet id' })
     const sid = asObjectId(serviceId)
-    if (!sid) return res.status(400).json({ error: 'invalid service id' })
     const startAtDate = new Date(startAt)
     if (!startAt || Number.isNaN(startAtDate.getTime())) {
       return res.status(400).json({ error: 'startAt is required' })
     }
-    const serviceDoc = professional.services?.id?.(sid)
-    if (!serviceDoc) return res.status(404).json({ error: 'Service not found for this professional' })
+    const serviceDoc = sid ? professional.services?.id?.(sid) : null
 
     const petDoc = await Pet.findOne({ _id: pid, owner: req.user.id })
     if (!petDoc) {
@@ -408,9 +406,9 @@ router.post('/api/bookings', async (req, res) => {
     const booking = await Booking.create({
       owner: req.user.id,
       pet: pid,
-      serviceId: serviceDoc._id,
-      serviceName: String(serviceDoc.name || '').trim(),
-      duration: serviceDoc.duration == null ? null : Number(serviceDoc.duration),
+      serviceId: serviceDoc?._id || null,
+      serviceName: String(serviceDoc?.name || professional.specialty || 'General service').trim(),
+      duration: serviceDoc?.duration == null ? null : Number(serviceDoc.duration),
       startAt: startAtDate,
       professional: {
         userId: professional.userId ? String(professional.userId) : null,
@@ -419,7 +417,7 @@ router.post('/api/bookings', async (req, res) => {
         location: String(professional.location || professional.city || '').trim(),
       },
       notes: String(notes || '').trim(),
-      price: Number(serviceDoc.price),
+      price: Number(serviceDoc?.price || 0),
       status: 'pending',
     })
 

@@ -227,10 +227,6 @@ export default function BookingsTab() {
     if (!petId || !selectedPro) return
     const services = Array.isArray(selectedPro.services) ? selectedPro.services : []
     const service = services[0]
-    if (!service?._id) {
-      showToast('This professional has no bookable service yet.')
-      return
-    }
     const startAt = combineDateAndTimeSlot(bookingDate, timeSlot)
     if (!startAt || Number.isNaN(startAt.getTime())) {
       showToast('Pick a valid date and time.')
@@ -241,7 +237,7 @@ export default function BookingsTab() {
       await api.post('/api/bookings', {
         professionalId: selectedPro._id,
         pet: petId,
-        serviceId: service._id,
+        serviceId: service?._id || null,
         startAt: startAt.toISOString(),
         notes,
       })

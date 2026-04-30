@@ -137,7 +137,7 @@ export default function AccountLayout() {
 
   // Only when someone opens /account… without a session (not during logout navigation away).
   if (ready && !user && location.pathname.startsWith('/account')) {
-    return <Navigate to="/login" replace />
+    return <Navigate to="/" replace />
   }
 
   return (

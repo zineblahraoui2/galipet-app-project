@@ -38,8 +38,9 @@ export default function AdminSidebar() {
   const { user, logout } = useContext(UserContext)
 
   async function handleLogout() {
+    localStorage.removeItem('token')
     await logout?.()
-    navigate('/login', { replace: true })
+    navigate('/', { replace: true })
   }
 
   return (

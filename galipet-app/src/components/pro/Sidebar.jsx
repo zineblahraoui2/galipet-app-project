@@ -69,8 +69,9 @@ export default function Sidebar() {
   }, [user?.role, user?.id])
 
   async function handleLogout() {
+    localStorage.removeItem('token')
     await logout?.()
-    navigate('/login', { replace: true })
+    navigate('/', { replace: true })
   }
 
   return (

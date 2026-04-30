@@ -20,8 +20,8 @@ const BookingSchema = new Schema(
     owner: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
     professional: { type: ProfessionalSnapshotSchema, required: true },
     pet: { type: Schema.Types.ObjectId, ref: 'Pet', required: true },
-    serviceId: { type: Schema.Types.ObjectId, default: null },
-    serviceName: { type: String, required: true, trim: true },
+    serviceId: { type: Schema.Types.ObjectId, default: null, required: false },
+    serviceName: { type: String, default: '', trim: true, required: false },
     duration: { type: Number, default: null },
     startAt: { type: Date, required: true },
     status: {

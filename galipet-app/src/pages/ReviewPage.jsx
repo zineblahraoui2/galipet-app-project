@@ -117,7 +117,7 @@ export default function ReviewPage() {
     return <p className="mt-10 text-center text-sm text-gray-500">Loading…</p>
   }
   if (!user) {
-    return <Navigate to="/login" replace />
+    return <Navigate to="/" replace />
   }
   if (!isOwner && !isPro) {
     return <Navigate to="/" replace />
