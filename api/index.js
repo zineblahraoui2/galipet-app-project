@@ -17,7 +17,6 @@ const app = require('./app')
 // Connect to DB
 connectDb().catch((err) => {
   console.error('MongoDB connection error:', err.message)
-  process.exit(1)
 })
 
 // Export app for Vercel serverless
