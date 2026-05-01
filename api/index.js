@@ -35,8 +35,9 @@ if (require.main === module) {
     process.env.JWT_SECRET?.trim() ? 'set' : 'MISSING (POST /login will fail)',
   )
 
-  app.listen(port, () => {
-    console.log(`API listening on http://localhost:${port}`)
+  // Bind all interfaces so platform health checks (Railway, Docker, etc.) can reach the process.
+  app.listen(port, '0.0.0.0', () => {
+    console.log(`API listening on 0.0.0.0:${port}`)
     console.log(
       '[galipet-api] Expect POST /register → 201 + body.user.id (otherwise another app may be using this port).',
     )
