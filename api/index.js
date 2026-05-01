@@ -1,8 +1,10 @@
 const fs = require('fs')
 const path = require('path')
 
-// Always load api/.env regardless of where you start the process (cwd).
-require('dotenv').config({ path: path.join(__dirname, '.env') })
+const envPath = path.join(__dirname, '.env')
+if (fs.existsSync(envPath)) {
+  require('dotenv').config({ path: envPath })
+}
 // Dev: Mapbox token often lives in galipet-app/.env as VITE_MAPBOX_TOKEN only.
 const galipetEnv = path.join(__dirname, '..', 'galipet-app', '.env')
 if (fs.existsSync(galipetEnv)) {
