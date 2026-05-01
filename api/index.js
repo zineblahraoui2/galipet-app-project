@@ -28,7 +28,7 @@ if (require.main === module) {
   const autoCompleteBookings = require('./helpers/autoCompleteBookings')
   const { startReminderJob } = require('./helpers/reminderJob')
 
-  const port = Number(process.env.PORT) || 3001
+  const PORT = process.env.PORT || 3001
 
   console.log('[galipet-api] process.cwd():', process.cwd())
   console.log('[galipet-api] app entry:', path.join(__dirname, 'app.js'))
@@ -38,8 +38,8 @@ if (require.main === module) {
   )
 
   // Bind all interfaces so platform health checks (Railway, Docker, etc.) can reach the process.
-  app.listen(port, '0.0.0.0', () => {
-    console.log(`API listening on 0.0.0.0:${port}`)
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`API listening on 0.0.0.0:${PORT}`)
     console.log(
       '[galipet-api] Expect POST /register → 201 + body.user.id (otherwise another app may be using this port).',
     )
