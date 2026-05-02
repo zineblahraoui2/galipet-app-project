@@ -176,7 +176,7 @@ export default function HeroSection() {
         aria-hidden
       />
 
-      <div className="relative z-[3] mx-auto flex w-full max-w-5xl flex-col items-center px-8 pb-12 pt-20 text-center md:px-32 md:py-12">
+      <div className="relative z-[3] mx-auto flex w-full max-w-5xl flex-col items-center px-8 pb-32 pt-20 text-center md:px-32 md:py-12">
         <p className="mb-3 text-[10px] font-bold uppercase tracking-[2.5px] text-[#E05C2A]">
           Trusted pet professionals
         </p>
