@@ -144,7 +144,7 @@ export default function Header() {
             </span>
           </Link>
 
-          <div className="hidden flex-wrap items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-2 shadow-sm transition hover:shadow-md md:flex md:gap-4 md:px-5">
+          <div className="hidden flex-wrap items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-2 shadow-sm transition hover:shadow-md lg:flex lg:gap-4 lg:px-5">
             {servicePills.map((service, index) => (
               <div key={service.type} className="flex items-center gap-4">
                 <Link
@@ -201,7 +201,7 @@ export default function Header() {
             <Link
               to="/search"
               aria-label="Search"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-700 shadow-sm transition hover:text-[#D85A30] md:hidden"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-700 shadow-sm transition hover:text-[#D85A30] lg:hidden"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -267,11 +267,33 @@ export default function Header() {
             </button>
           </div>
         </div>
+
+        <nav
+          className="lg:hidden overflow-x-auto overscroll-x-contain border-t border-gray-100/90 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          aria-label="Browse by service"
+        >
+          <div className="mx-auto flex w-max justify-center gap-2 px-4 py-1.5">
+            {servicePills.map((service) => (
+              <Link
+                key={service.type}
+                to={`/search?type=${service.type}`}
+                className={[
+                  'shrink-0 rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-medium shadow-sm transition',
+                  activeType === service.type
+                    ? 'border-[#D85A30]/40 text-[#D85A30]'
+                    : 'text-gray-700 hover:border-[#D85A30]/30 hover:text-[#D85A30]',
+                ].join(' ')}
+              >
+                {service.label}
+              </Link>
+            ))}
+          </div>
+        </nav>
       </header>
 
       <aside
         ref={menuRef}
-        className={`absolute right-4 top-16 z-50 w-[260px] overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-xl transition-all duration-150 ${
+        className={`absolute right-4 top-[calc(4rem+2.5rem)] z-50 w-[260px] overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-xl transition-all duration-150 lg:top-16 ${
           sidebarOpen
             ? 'pointer-events-auto scale-100 opacity-100'
             : 'pointer-events-none scale-95 opacity-0'
@@ -285,7 +307,7 @@ export default function Header() {
 
         {!showSignedIn ? (
           <div className="p-3">
-            <div className="space-y-1 md:hidden">
+            <div className="space-y-1 lg:hidden">
               {servicePills.map((service) => {
                 const { NavIcon } = service
                 return (
@@ -301,7 +323,7 @@ export default function Header() {
                 )
               })}
             </div>
-            <div className="my-2 border-t border-gray-100 md:hidden" />
+            <div className="my-2 border-t border-gray-100 lg:hidden" />
             <div className="space-y-1">
               <MenuItem icon={Search} label="Search professionals" onClick={() => { setSidebarOpen(false); navigate('/search') }} />
               <MenuItem icon={MapPin} label="Find near me" onClick={() => { setSidebarOpen(false); navigate('/search') }} />
@@ -347,7 +369,7 @@ export default function Header() {
                 </div>
               </div>
             </div>
-            <div className="border-b border-gray-100 p-3 md:hidden">
+            <div className="border-b border-gray-100 p-3 lg:hidden">
               <p className="mb-2 px-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
                 Browse services
               </p>
