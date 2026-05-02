@@ -18,7 +18,7 @@ function publicImage(filename) {
 
 export default function HeroSection() {
   return (
-    <section className="relative z-10 flex min-h-[400px] w-full items-center justify-center overflow-hidden bg-transparent">
+    <section className="relative z-10 flex min-h-[440px] w-full items-center justify-center overflow-hidden bg-transparent md:min-h-[400px]">
       <svg
         className="pointer-events-none absolute left-1/2 top-1/2 z-[1] h-[min(55vw,280px)] w-[min(92vw,520px)] -translate-x-1/2 -translate-y-1/2 opacity-[0.07]"
         viewBox="0 0 520 280"
@@ -176,7 +176,7 @@ export default function HeroSection() {
         aria-hidden
       />
 
-      <div className="relative z-[3] mx-auto flex w-full max-w-5xl flex-col items-center px-8 py-10 text-center md:px-32 md:py-12">
+      <div className="relative z-[3] mx-auto flex w-full max-w-5xl flex-col items-center px-8 pb-12 pt-20 text-center md:px-32 md:py-12">
         <p className="mb-3 text-[10px] font-bold uppercase tracking-[2.5px] text-[#E05C2A]">
           Trusted pet professionals
         </p>
@@ -194,61 +194,61 @@ export default function HeroSection() {
         </p>
       </div>
 
-      <div className="absolute left-8 top-8 z-[2] -rotate-6">
-        <Link to="/search?type=vet" className="flex flex-col items-center gap-1">
-          <div className="h-[130px] w-[130px] overflow-hidden rounded-full border-[5px] border-[#E05C2A] bg-[#f2c8b0]">
+      <div className="absolute left-0 top-3 z-[2] -rotate-6 md:left-8 md:top-8">
+        <Link to="/search?type=vet" className="flex flex-col items-center gap-0.5 md:gap-1">
+          <div className="h-[70px] w-[70px] overflow-hidden rounded-full border-2 border-[#E05C2A] bg-[#f2c8b0] md:h-[130px] md:w-[130px] md:border-[5px]">
             <img
               src={publicImage(HERO_CIRCLE_IMAGES.vet)}
               alt="Vet"
               className="w-full h-full object-cover"
             />
           </div>
-          <span className="text-[9px] font-extrabold uppercase tracking-wide text-[#1A1A1A]">
+          <span className="text-[8px] font-extrabold uppercase tracking-wide text-[#1A1A1A] md:text-[9px]">
             Vet
           </span>
         </Link>
       </div>
 
-      <div className="absolute right-8 top-8 z-[2] -rotate-6">
-        <Link to="/search?type=grooming" className="flex flex-col items-center gap-1">
-          <div className="h-[80px] w-[80px] overflow-hidden rounded-full border-4 border-[#F5C842] bg-[#f5e2a0]">
+      <div className="absolute right-0 top-3 z-[2] -rotate-6 md:right-8 md:top-8">
+        <Link to="/search?type=grooming" className="flex flex-col items-center gap-0.5 md:gap-1">
+          <div className="h-[70px] w-[70px] overflow-hidden rounded-full border-2 border-[#F5C842] bg-[#f5e2a0] md:h-[80px] md:w-[80px] md:border-4">
             <img
               src={publicImage(HERO_CIRCLE_IMAGES.groomer)}
               alt="Groomer"
               className="w-full h-full object-cover"
             />
           </div>
-          <span className="text-[9px] font-extrabold uppercase tracking-wide text-[#1A1A1A]">
+          <span className="text-[8px] font-extrabold uppercase tracking-wide text-[#1A1A1A] md:text-[9px]">
             Groomer
           </span>
         </Link>
       </div>
 
-      <div className="absolute bottom-8 left-8 z-[2] -rotate-6">
-        <Link to="/search?type=training" className="flex flex-col items-center gap-1">
-          <div className="h-[80px] w-[80px] overflow-hidden rounded-full border-4 border-[#5CB85C] bg-[#b8ddb8]">
+      <div className="absolute bottom-3 left-0 z-[2] -rotate-6 md:bottom-8 md:left-8">
+        <Link to="/search?type=training" className="flex flex-col items-center gap-0.5 md:gap-1">
+          <div className="h-[70px] w-[70px] overflow-hidden rounded-full border-2 border-[#5CB85C] bg-[#b8ddb8] md:h-[80px] md:w-[80px] md:border-4">
             <img
               src={publicImage(HERO_CIRCLE_IMAGES.trainer)}
               alt="Trainer"
               className="w-full h-full object-cover"
             />
           </div>
-          <span className="text-[9px] font-extrabold uppercase tracking-wide text-[#1A1A1A]">
+          <span className="text-[8px] font-extrabold uppercase tracking-wide text-[#1A1A1A] md:text-[9px]">
             Trainer
           </span>
         </Link>
       </div>
 
-      <div className="absolute bottom-8 right-8 z-[2] -rotate-6">
-        <Link to="/search?type=sitting" className="flex flex-col items-center gap-1">
-          <div className="h-[130px] w-[130px] overflow-hidden rounded-full border-[5px] border-[#4AABDB] bg-[#a8d4f0]">
+      <div className="absolute bottom-3 right-0 z-[2] -rotate-6 md:bottom-8 md:right-8">
+        <Link to="/search?type=sitting" className="flex flex-col items-center gap-0.5 md:gap-1">
+          <div className="h-[70px] w-[70px] overflow-hidden rounded-full border-2 border-[#4AABDB] bg-[#a8d4f0] md:h-[130px] md:w-[130px] md:border-[5px]">
             <img
               src={publicImage(HERO_CIRCLE_IMAGES.sitter)}
               alt="Sitter"
               className="w-full h-full object-cover"
             />
           </div>
-          <span className="text-[9px] font-extrabold uppercase tracking-wide text-[#1A1A1A]">
+          <span className="text-[8px] font-extrabold uppercase tracking-wide text-[#1A1A1A] md:text-[9px]">
             Sitter
           </span>
         </Link>
