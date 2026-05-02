@@ -122,25 +122,25 @@ export default function HeroSection() {
       />
 
       <span
-        className="pointer-events-none absolute left-[18%] top-[28%] z-[2] h-1.5 w-1.5 rounded-full bg-[#E05C2A] opacity-[0.15]"
+        className="pointer-events-none absolute left-[18%] top-[28%] z-[2] hidden h-1.5 w-1.5 rounded-full bg-[#E05C2A] opacity-[0.15] md:block"
         aria-hidden
       />
       <span
-        className="pointer-events-none absolute right-[22%] top-[32%] z-[2] h-1.5 w-1.5 rounded-full bg-[#F5C842] opacity-[0.15]"
+        className="pointer-events-none absolute right-[22%] top-[32%] z-[2] hidden h-1.5 w-1.5 rounded-full bg-[#F5C842] opacity-[0.15] md:block"
         aria-hidden
       />
       <span
-        className="pointer-events-none absolute bottom-[26%] left-[30%] z-[2] h-1.5 w-1.5 rounded-full bg-[#5CB85C] opacity-[0.15]"
+        className="pointer-events-none absolute bottom-[26%] left-[30%] z-[2] hidden h-1.5 w-1.5 rounded-full bg-[#5CB85C] opacity-[0.15] md:block"
         aria-hidden
       />
       <span
-        className="pointer-events-none absolute bottom-[22%] right-[28%] z-[2] h-1.5 w-1.5 rounded-full bg-[#4AABDB] opacity-[0.15]"
+        className="pointer-events-none absolute bottom-[22%] right-[28%] z-[2] hidden h-1.5 w-1.5 rounded-full bg-[#4AABDB] opacity-[0.15] md:block"
         aria-hidden
       />
 
       <GiPawPrint
         size={44}
-        className="paw-spin-float pointer-events-none absolute z-[2] text-[#D85A30]"
+        className="paw-spin-float pointer-events-none absolute z-[2] hidden text-[#D85A30] md:block"
         style={{
           top: '12%',
           left: '5%',
@@ -152,7 +152,7 @@ export default function HeroSection() {
       />
       <GiPawPrint
         size={38}
-        className="paw-spin-float pointer-events-none absolute z-[2] text-[#D85A30]"
+        className="paw-spin-float pointer-events-none absolute z-[2] hidden text-[#D85A30] md:block"
         style={{
           top: '10%',
           right: '5%',
@@ -164,7 +164,7 @@ export default function HeroSection() {
       />
       <GiPawPrint
         size={40}
-        className="paw-spin-float pointer-events-none absolute z-[2] text-[#D85A30]"
+        className="paw-spin-float pointer-events-none absolute z-[2] hidden text-[#D85A30] md:block"
         style={{
           bottom: '10%',
           left: '6%',
@@ -176,7 +176,7 @@ export default function HeroSection() {
       />
       <GiPawPrint
         size={36}
-        className="paw-spin-float pointer-events-none absolute z-[2] text-[#D85A30]"
+        className="paw-spin-float pointer-events-none absolute z-[2] hidden text-[#D85A30] md:block"
         style={{
           bottom: '12%',
           right: '6%',
@@ -187,56 +187,58 @@ export default function HeroSection() {
         aria-hidden
       />
 
-      <div className="relative z-[3] flex w-full shrink-0 items-start justify-between px-6 pt-4 md:hidden">
-        <HeroAvatarLink
-          to="/search?type=vet"
-          imgKey="vet"
-          alt="Vet"
-          label="Vet"
-          circleClassName="h-[70px] w-[70px] border-2 border-[#E05C2A] bg-[#f2c8b0]"
-        />
-        <HeroAvatarLink
-          to="/search?type=grooming"
-          imgKey="groomer"
-          alt="Groomer"
-          label="Groomer"
-          circleClassName="h-[70px] w-[70px] border-2 border-[#F5C842] bg-[#f5e2a0]"
-        />
-      </div>
+      <div className="relative z-[3] flex min-h-0 w-full flex-1 flex-col justify-between md:contents">
+        <div className="flex w-full shrink-0 items-start justify-between px-6 md:hidden">
+          <HeroAvatarLink
+            to="/search?type=vet"
+            imgKey="vet"
+            alt="Vet"
+            label="Vet"
+            circleClassName="h-[70px] w-[70px] border-2 border-[#E05C2A] bg-[#f2c8b0]"
+          />
+          <HeroAvatarLink
+            to="/search?type=grooming"
+            imgKey="groomer"
+            alt="Groomer"
+            label="Groomer"
+            circleClassName="h-[70px] w-[70px] border-2 border-[#F5C842] bg-[#f5e2a0]"
+          />
+        </div>
 
-      <div className="relative z-[3] mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center px-8 py-8 text-center md:flex-none md:px-32 md:py-12">
-        <p className="mb-3 text-[10px] font-bold uppercase tracking-[2.5px] text-[#E05C2A]">
-          Trusted pet professionals
-        </p>
-        <h1 className="w-full font-black uppercase leading-tight tracking-tighter">
-          <span className="block text-5xl text-[#1A1A1A] md:text-6xl">
-            Where every
-          </span>
-          <span className="block text-5xl text-[#E05C2A] md:text-6xl">
-            pet&apos;s care begins!
-          </span>
-        </h1>
-        <p className="mt-4 w-full max-w-md text-center text-base leading-relaxed text-gray-600">
-          Find vets, groomers, sitters and trainers near you, because your pet
-          deserves the best.
-        </p>
-      </div>
+        <div className="relative mx-auto flex w-full max-w-5xl shrink-0 flex-col items-center px-8 py-0 text-center md:px-32 md:py-12">
+          <p className="mb-3 text-[10px] font-bold uppercase tracking-[2.5px] text-[#E05C2A]">
+            Trusted pet professionals
+          </p>
+          <h1 className="w-full font-black uppercase leading-tight tracking-tighter">
+            <span className="block text-5xl text-[#1A1A1A] md:text-6xl">
+              Where every
+            </span>
+            <span className="block text-5xl text-[#E05C2A] md:text-6xl">
+              pet&apos;s care begins!
+            </span>
+          </h1>
+          <p className="mt-4 w-full max-w-md text-center text-base leading-relaxed text-gray-600">
+            Find vets, groomers, sitters and trainers near you, because your pet
+            deserves the best.
+          </p>
+        </div>
 
-      <div className="relative z-[3] flex w-full shrink-0 items-start justify-between px-6 pb-4 md:hidden">
-        <HeroAvatarLink
-          to="/search?type=training"
-          imgKey="trainer"
-          alt="Trainer"
-          label="Trainer"
-          circleClassName="h-[70px] w-[70px] border-2 border-[#5CB85C] bg-[#b8ddb8]"
-        />
-        <HeroAvatarLink
-          to="/search?type=sitting"
-          imgKey="sitter"
-          alt="Sitter"
-          label="Sitter"
-          circleClassName="h-[70px] w-[70px] border-2 border-[#4AABDB] bg-[#a8d4f0]"
-        />
+        <div className="flex w-full shrink-0 items-start justify-between px-6 md:hidden">
+          <HeroAvatarLink
+            to="/search?type=training"
+            imgKey="trainer"
+            alt="Trainer"
+            label="Trainer"
+            circleClassName="h-[70px] w-[70px] border-2 border-[#5CB85C] bg-[#b8ddb8]"
+          />
+          <HeroAvatarLink
+            to="/search?type=sitting"
+            imgKey="sitter"
+            alt="Sitter"
+            label="Sitter"
+            circleClassName="h-[70px] w-[70px] border-2 border-[#4AABDB] bg-[#a8d4f0]"
+          />
+        </div>
       </div>
 
       <div className="absolute left-0 top-3 z-[2] hidden md:left-8 md:top-8 md:block">
