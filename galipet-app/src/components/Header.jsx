@@ -2,14 +2,18 @@ import { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import {
   Calendar,
+  GraduationCap,
   Home,
   LogIn,
   LogOut,
   MapPin,
   MessageCircle,
   PawPrint,
+  Scissors,
   Search,
   Settings,
+  Sofa,
+  Stethoscope,
   User,
   UserPlus,
 } from 'lucide-react'
@@ -17,10 +21,10 @@ import { UserContext } from '../UserContext.jsx'
 import { MessagesUnreadContext } from '../MessagesUnreadContext.jsx'
 
 const servicePills = [
-  { label: 'Vets', type: 'vet' },
-  { label: 'Groomers', type: 'grooming' },
-  { label: 'Sitters', type: 'sitting' },
-  { label: 'Trainers', type: 'training' },
+  { label: 'Vets', type: 'vet', NavIcon: Stethoscope },
+  { label: 'Groomers', type: 'grooming', NavIcon: Scissors },
+  { label: 'Sitters', type: 'sitting', NavIcon: Sofa },
+  { label: 'Trainers', type: 'training', NavIcon: GraduationCap },
 ]
 
 const accountNavItems = [
@@ -281,6 +285,23 @@ export default function Header() {
 
         {!showSignedIn ? (
           <div className="p-3">
+            <div className="space-y-1 md:hidden">
+              {servicePills.map((service) => {
+                const { NavIcon } = service
+                return (
+                  <MenuItem
+                    key={service.type}
+                    icon={NavIcon}
+                    label={service.label}
+                    onClick={() => {
+                      setSidebarOpen(false)
+                      navigate(`/search?type=${service.type}`)
+                    }}
+                  />
+                )
+              })}
+            </div>
+            <div className="my-2 border-t border-gray-100 md:hidden" />
             <div className="space-y-1">
               <MenuItem icon={Search} label="Search professionals" onClick={() => { setSidebarOpen(false); navigate('/search') }} />
               <MenuItem icon={MapPin} label="Find near me" onClick={() => { setSidebarOpen(false); navigate('/search') }} />
@@ -324,6 +345,27 @@ export default function Header() {
                   </p>
                   <p className="truncate text-xs text-gray-500">{user?.email || ''}</p>
                 </div>
+              </div>
+            </div>
+            <div className="border-b border-gray-100 p-3 md:hidden">
+              <p className="mb-2 px-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                Browse services
+              </p>
+              <div className="space-y-1">
+                {servicePills.map((service) => {
+                  const { NavIcon } = service
+                  return (
+                    <MenuItem
+                      key={service.type}
+                      icon={NavIcon}
+                      label={service.label}
+                      onClick={() => {
+                        setSidebarOpen(false)
+                        navigate(`/search?type=${service.type}`)
+                      }}
+                    />
+                  )
+                })}
               </div>
             </div>
             <nav className="p-3">
