@@ -18,7 +18,7 @@ function publicImage(filename) {
 
 export default function HeroSection() {
   return (
-    <section className="relative z-10 flex min-h-[440px] w-full items-center justify-center overflow-hidden bg-transparent md:min-h-[400px]">
+    <section className="relative z-10 flex min-h-[520px] w-full items-center justify-center overflow-hidden bg-transparent md:min-h-[400px]">
       <svg
         className="pointer-events-none absolute left-1/2 top-1/2 z-[1] h-[min(55vw,280px)] w-[min(92vw,520px)] -translate-x-1/2 -translate-y-1/2 opacity-[0.07]"
         viewBox="0 0 520 280"
@@ -176,7 +176,7 @@ export default function HeroSection() {
         aria-hidden
       />
 
-      <div className="relative z-[3] mx-auto flex w-full max-w-5xl flex-col items-center px-8 pb-32 pt-20 text-center md:px-32 md:py-12">
+      <div className="relative z-[3] mx-auto flex w-full max-w-5xl flex-col items-center px-8 pb-12 pt-20 text-center md:px-32 md:py-12">
         <p className="mb-3 text-[10px] font-bold uppercase tracking-[2.5px] text-[#E05C2A]">
           Trusted pet professionals
         </p>
@@ -224,7 +224,7 @@ export default function HeroSection() {
         </Link>
       </div>
 
-      <div className="absolute bottom-3 left-0 z-[2] -rotate-6 md:bottom-8 md:left-8">
+      <div className="absolute bottom-0 left-0 z-[2] -rotate-6 md:bottom-8 md:left-8">
         <Link to="/search?type=training" className="flex flex-col items-center gap-0.5 md:gap-1">
           <div className="h-[70px] w-[70px] overflow-hidden rounded-full border-2 border-[#5CB85C] bg-[#b8ddb8] md:h-[80px] md:w-[80px] md:border-4">
             <img
@@ -239,7 +239,7 @@ export default function HeroSection() {
         </Link>
       </div>
 
-      <div className="absolute bottom-3 right-0 z-[2] -rotate-6 md:bottom-8 md:right-8">
+      <div className="absolute bottom-0 right-0 z-[2] -rotate-6 md:bottom-8 md:right-8">
         <Link to="/search?type=sitting" className="flex flex-col items-center gap-0.5 md:gap-1">
           <div className="h-[70px] w-[70px] overflow-hidden rounded-full border-2 border-[#4AABDB] bg-[#a8d4f0] md:h-[130px] md:w-[130px] md:border-[5px]">
             <img
